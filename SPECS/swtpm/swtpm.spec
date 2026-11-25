@@ -13,7 +13,7 @@ Release:        %autorelease
 Summary:        TPM Emulator
 License:        BSD-3-Clause
 URL:            https://github.com/stefanberger/swtpm
-#!RemoteAsset
+#!RemoteAsset:  sha256:f8da11cadfed27e26d26c5f58a7b8f2d14d684e691927348906b5891f525c684
 Source:         https://github.com/stefanberger/swtpm/archive/refs/tags/v%{version}.tar.gz
 BuildSystem:    autotools
 
@@ -56,11 +56,14 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 Include files for the TPM emulator.
 
 %package        tests
-Summary:        Installed swtpm tests
+Summary:        Installed test scripts and helpers for swtpm
 Requires:       %{name}%{?_isa} = %{version}-%{release}
 
 %description    tests
-Installed swtpm tests.
+The upstream swtpm test scripts and helper executables.
+Tests exercise TPM state, migration, encryption and command handling.
+Some cases require particular TPM capabilities, writable state directories
+or suitable device and privilege support.
 
 %conf -p
 NOCONFIGURE=1 ./autogen.sh
@@ -106,4 +109,4 @@ NOCONFIGURE=1 ./autogen.sh
 %{_libexecdir}/installed-tests/swtpm/
 
 %changelog
-%{?autochangelog}
+%autochangelog
