@@ -142,7 +142,7 @@ BuildRequires:  pkgconfig(libffi)
 BuildRequires:  pkgconfig(ncurses)
 BuildRequires:  make
 BuildRequires:  pkgconfig(libmpdec)
-BuildRequires:  pkgconfig(openssl)
+BuildRequires:  pkgconfig(openssl3)
 BuildRequires:  pkgconfig
 BuildRequires:  python-rpm-macros
 BuildRequires:  pkgconfig(sqlite3)
@@ -314,8 +314,8 @@ Requires:       %{pkgname} = %{version}-%{release}
 The Tkinter (Tk interface) library is a graphical user interface toolkit for
 the Python programming language.
 
-%package        -n %{pkgname}-test
-Summary:        The self-test suite for the main python3 package
+%package        -n %{pkgname}-tests
+Summary:        Self-tests and test extension modules for Python
 Requires:       %{pkgname} = %{version}-%{release}
 Requires:       %{pkgname}-libs%{?_isa} = %{version}-%{release}
 %if %{with rpmwheels}
@@ -326,12 +326,12 @@ Provides:       bundled(python3dist(setuptools)) = %{setuptools_version}
 License:        Python-2.0.1 AND MIT AND Apache-2.0 AND (Apache-2.0 OR BSD-2-Clause)
 %endif
 
-%description -n %{pkgname}-test
-The self-test suite for the Python interpreter.
-
-This is only useful to test Python itself. For testing general Python code,
-you should use the unittest module from %{pkgname}-libs, or a library such as
-%{pkgname}-pytest.
+%description -n %{pkgname}-tests
+The installed Python standard-library test package, its test data and
+helper extension modules, including the _test* modules used by CPython
+self-tests. Some cases require optional modules, external programs or
+platform-specific support. For testing applications, use unittest from
+%{pkgname}-libs; this package is intended for testing Python itself.
 
 %prep -a
 # Verify the second level of bundled provides is up to date
@@ -695,7 +695,7 @@ EXCLUDES="-x test_ensurepip -x test_ctypes -x test_tools"
 %dir %{pylibdir}/turtledemo/__pycache__/
 %{pylibdir}/turtledemo/__pycache__/*%{bytecode_suffixes}
 
-%files -n %{pkgname}-test
+%files -n %{pkgname}-tests
 %{pylibdir}/test/
 # Pure Python modules
 %{pylibdir}/__phello__/
