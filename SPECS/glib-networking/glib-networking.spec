@@ -17,6 +17,7 @@ Source:         https://download.gnome.org/sources/glib-networking/2.80/glib-net
 BuildSystem:    meson
 
 BuildOption(conf):  -Dgnome_proxy=disabled
+BuildOption(conf):  -Dinstalled_tests=true
 
 BuildRequires:  meson
 BuildRequires:  ca-certificates-mozilla
@@ -36,6 +37,15 @@ Requires:       ca-certificates-mozilla
 This package contains network-related GIO modules for GLib, providing
 TLS (via GnuTLS) and proxy support (via libproxy).
 
+%package        tests
+Summary:        Installed TLS and proxy tests for GLib networking
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description    tests
+TLS and proxy test programs, test certificates and installed-tests
+metadata for GLib networking. Some cases require a local test server,
+proxy backend or appropriate TLS support.
+
 %install -a
 %find_lang %{name} --generate-subpackages
 
@@ -54,6 +64,10 @@ TLS (via GnuTLS) and proxy support (via libproxy).
 %{_libdir}/gio/modules/*.so
 %{_libexecdir}/glib-pacrunner
 %{_userunitdir}/glib-pacrunner.service
+
+%files tests
+%{_libexecdir}/installed-tests/glib-networking/
+%{_datadir}/installed-tests/glib-networking/
 
 %changelog
 %autochangelog
