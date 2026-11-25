@@ -40,6 +40,15 @@ PCRE2 is a re-working of the original PCRE library to provide a new API.
 This package contains the runtime libraries (8-bit, 16-bit, 32-bit, and POSIX)
 and the `pcre2grep` and `pcre2test` command-line tools.
 
+%package        tests
+Summary:        Native JIT self-test program for PCRE2
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description    tests
+The upstream pcre2_jit_test executable for testing PCRE2 JIT support.
+This package does not contain the full reference-data-driven test suite.
+The pcre2test diagnostic driver and its manual remain in the main package.
+
 %package        devel
 Summary:        Development files for pcre2
 Requires:       %{name}%{?_isa} = %{version}-%{release}
@@ -50,6 +59,9 @@ for compiling applications that use the PCRE2 library.
 
 %conf -p
 autoreconf -fiv
+
+%install -a
+./libtool --mode=install install -Dpm0755 pcre2_jit_test %{buildroot}%{_libexecdir}/pcre2/tests/pcre2_jit_test
 
 %files
 %doc AUTHORS.md ChangeLog NEWS README
@@ -74,6 +86,9 @@ autoreconf -fiv
 %{_mandir}/man1/pcre2-config.1.gz
 %{_mandir}/man3/*
 %{_bindir}/pcre2-config
+
+%files tests
+%{_libexecdir}/pcre2/tests/pcre2_jit_test
 
 %changelog
 %autochangelog
