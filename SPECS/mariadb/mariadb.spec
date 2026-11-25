@@ -28,7 +28,7 @@ Summary:        Server part of MariaDB
 License:        GPL-2.0-only
 URL:            https://www.mariadb.org
 VCS:            git:https://github.com/MariaDB/server.git
-#!RemoteAsset
+#!RemoteAsset:  sha256:b126581a8ca89376d2a3ce63fee97c114c3e15315345e769b9d00c51e1b7d619
 Source:         https://archive.mariadb.org/%{name}-%{version}/source/%{name}-%{version}.tar.gz
 Source1:        mysql-user.sysusers
 Source2:        my.ini
@@ -41,6 +41,9 @@ BuildSystem:    cmake
 
 Patch0:         fix-pamdir.patch
 
+BuildOption(conf):  -DOPENSSL_INCLUDE_DIR=%{_includedir}/openssl3-compat
+BuildOption(conf):  -DOPENSSL_SSL_LIBRARY=%{_libdir}/libssl.so.3
+BuildOption(conf):  -DOPENSSL_CRYPTO_LIBRARY=%{_libdir}/libcrypto.so.3
 BuildOption(conf):  -DWITH_SSL=system
 BuildOption(conf):  -DENABLED_PROFILING=ON
 BuildOption(conf):  -DENABLE_DEBUG_SYNC=OFF
@@ -103,7 +106,7 @@ BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libxml-2.0)
 # CLI graphic and wsrep API
 BuildRequires:  pkgconfig(ncurses)
-BuildRequires:  pkgconfig(openssl)
+BuildRequires:  pkgconfig(openssl3-compat)
 # auth_pam.so plugin
 BuildRequires:  pkgconfig(pam)
 BuildRequires:  pkgconfig(libpcre2-8)
@@ -172,8 +175,8 @@ This package contains benchmark scripts and data for MariaDB.
 To run these database benchmarks, start the script "run-all-tests" in
 the directory %{_datadir}/sql-bench after starting MariaDB.
 
-%package        test
-Summary:        Testsuite for MariaDB
+%package        tests
+Summary:        MariaDB test programs, SQL cases and result data
 Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-bench = %{version}-%{release}
 Requires:       %{name}-client = %{version}-%{release}
@@ -181,6 +184,8 @@ Requires:       %{name}-tools = %{version}-%{release}
 # Requires libmariadb_plugins in order to test client plugins successfuly
 # Requires:       libmariadb_plugins >= 3.0
 # Requires:       perl-DBD-mysql
+Requires:       patch
+Requires:       rsync
 Requires:       procps
 Requires:       time
 # Tests requires time and ps and some perl modules
@@ -198,8 +203,11 @@ Requires:       perl(Sys::Hostname)
 Requires:       perl(Test::More)
 Requires:       perl(Time::HiRes)
 
-%description    test
-This package contains the test scripts and data for MariaDB.
+%description    tests
+MariaDB test-runner scripts, SQL cases, expected results and helper
+programs. Test execution requires writable directories and isolated
+server instances. Some suites also need particular storage engines,
+plugins or a multi-server environment.
 
 %package        tools
 Summary:        MariaDB tools
@@ -289,10 +297,8 @@ rm -f %{buildroot}%{_bindir}/wsrep_sst_xtrabackup
 rm -f %{buildroot}%{_bindir}/galera_new_cluster
 rm -f %{buildroot}%{_bindir}/galera_recovery
 rm -f %{buildroot}%{_bindir}/wsrep_sst_backup
-rm -f %{buildroot}%{_bindir}/wsrep_sst_common
 rm -f %{buildroot}%{_bindir}/wsrep_sst_mariabackup
 rm -f %{buildroot}%{_bindir}/wsrep_sst_mysqldump
-rm -f %{buildroot}%{_bindir}/wsrep_sst_rsync
 rm -f %{buildroot}%{_bindir}/wsrep_sst_rsync_wan
 rm -f %{buildroot}%{_mandir}/man1/galera_new_cluster.1*
 rm -f %{buildroot}%{_mandir}/man1/galera_recovery.1*
@@ -532,7 +538,9 @@ chmod 4755 %{_libdir}/mysql/plugin/auth_pam_tool_dir/auth_pam_tool 2>/dev/null |
 %{_datadir}/sql-bench
 %{_datadir}/%{name}/mini-benchmark
 
-%files test -f mariadb-test.files
+%files tests -f mariadb-test.files
+%{_bindir}/wsrep_sst_common
+%{_bindir}/wsrep_sst_rsync
 %{_bindir}/test-connect-t
 %{_mandir}/man1/my_safe_process.1%{?ext_man}
 %{_mandir}/man1/mysql-test-run.pl.1%{?ext_man}
@@ -545,4 +553,4 @@ chmod 4755 %{_libdir}/mysql/plugin/auth_pam_tool_dir/auth_pam_tool 2>/dev/null |
 %files tools -f mariadb-tools.files
 
 %changelog
-%{?autochangelog}
+%autochangelog
