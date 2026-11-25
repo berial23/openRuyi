@@ -29,7 +29,7 @@ BuildOption(conf):  -D seccomp=true
 BuildOption(conf):  -D memfd-rexec=true
 BuildOption(conf):  -D thread-safety=true
 BuildOption(conf):  -D dbus=true
-BuildOption(conf):  -D tests=false
+BuildOption(conf):  -D tests=true
 BuildOption(conf):  -D init-script=systemd
 BuildOption(conf):  -D systemd-unitdir=%{_unitdir}
 BuildOption(conf):  -D distrosysconfdir=sysconfig
@@ -70,6 +70,16 @@ Requires:       wget
 Linux Resource Containers provide process and resource isolation without the
 overhead of full virtualization. This package contains the main command-line tools.
 
+%package        tests
+Summary:        Native test programs for LXC
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description    tests
+The upstream lxc-test-* executables for container configuration, lifecycle
+and kernel integration. Many cases require privileged access, suitable
+namespaces and cgroups, or AppArmor and checkpoint/restore support.
+Container root filesystems and external test environments are not included.
+
 %package        devel
 Summary:        Development files for lxc
 Requires:       %{name}%{?_isa} = %{version}-%{release}
@@ -94,6 +104,7 @@ install -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/sysconfig/lxc-net
 %systemd_postun lxc-net.service lxc.service lxc-monitord.service
 
 %files
+%exclude %{_bindir}/lxc-test-*
 %doc AUTHORS README.md
 %license COPYING
 %{_bindir}/lxc-*
@@ -120,6 +131,9 @@ install -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/sysconfig/lxc-net
 %{_libdir}/pkgconfig/lxc.pc
 %{_includedir}/lxc
 %{_libdir}/liblxc.so
+
+%files tests
+%{_bindir}/lxc-test-*
 
 %changelog
 %autochangelog
